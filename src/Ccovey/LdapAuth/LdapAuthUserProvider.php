@@ -13,20 +13,20 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
 {
     /**
      * Active Directory Object
-     * 
+     *
      * @var adLDAP\adLDAP
      */
     protected $ad;
-    
+
     /**
      *
      * @var type string
      */
     protected $model;
-    
+
     /**
      * DI in adLDAP object for use throughout
-     * 
+     *
      * @param adLDAP\adLDAP $conn
      */
     public function __construct(adLDAP\adLDAP $conn, $config, $model = null)
@@ -34,7 +34,7 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
         $this->ad = $conn;
 
         $this->config = $config;
-        
+
         $this->model = $model;
     }
 
@@ -47,7 +47,7 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
     public function retrieveByID($identifier)
     {
         $ldapUserInfo = null;
-        
+
         $infoCollection = $this->ad->user()->infoCollection($identifier, array('*') );
 
         if ( $infoCollection ) {
@@ -55,7 +55,7 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
 
             if ($this->model) {
                 $model = $this->createModel()->newQuery()->where($this->getUsernameField(), $identifier)->first();
-                
+
                 if ( ! is_null($model) ) {
                     return $this->addLdapToModel($model, $ldapUserInfo);
                 }
@@ -74,7 +74,7 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
     public function retrieveByCredentials(array $credentials)
     {
         if ( ! $user = $credentials[$this->getUsernameField()] ) {
-            throw new InvalidArgumentException;
+            throw new \InvalidArgumentException;
         }
 
         $infoCollection = $this->ad->user()->infoCollection($user, array('*'));
@@ -108,10 +108,10 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
     {
         return $this->ad->authenticate($credentials['username'], $credentials['password']);
     }
-    
+
     /**
      * Build the array sent to GenericUser for use in Auth::user()
-     * 
+     *
      * @param adLDAP\adLDAP $infoCollection
      * @return array $info
      */
@@ -129,7 +129,7 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
                     $info[$k] = $this->getAllGroups($infoCollection->memberof);
                 }elseif ($k == 'primarygroup') {
                     $info[$k] = $this->getPrimaryGroup($infoCollection->distinguishedname);
-                }else{    
+                }else{
                     $info[$k] = $infoCollection->$field;
                 }
             }
@@ -140,7 +140,7 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
             $info['primarygroup'] = $this->getPrimaryGroup($infoCollection->distinguishedname);
             $info['groups'] = $this->getAllGroups($infoCollection->memberof);
         }
-        
+
         /*
         * I needed a user list to populate a dropdown
         * Set userlist to true in app/config/auth.php and set a group in app/config/auth.php as well
@@ -154,19 +154,19 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
     }
 
     /**
-     * 
+     *
      * @return Illuminate\Auth\UserInterface
      */
     public function createModel()
-    {   
+    {
         $model = '\\' . ltrim($this->model, '\\');
-        
+
         return new $model;
     }
 
     /**
      * Add Ldap fields to current user model.
-     * 
+     *
      * @param Illuminate\Auth\UserInterface $model
      * @param adLDAP\collection\adLDAPCollection $ldap
      * @return Illuminate\Auth\UserInterface
@@ -180,7 +180,7 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
 
     /**
      * Return Primary Group Listing
-     * @param  array $groupList 
+     * @param  array $groupList
      * @return string
      */
     protected function getPrimaryGroup($groupList)
@@ -192,10 +192,10 @@ class LdapAuthUserProvider implements Auth\UserProviderInterface
 
     /**
      * Return list of groups (except domain and suffix)
-     * @param  array $groups 
+     * @param  array $groups
      * @return array
      */
-    protected function getAllGroups($groups) 
+    protected function getAllGroups($groups)
     {
         $grps = '';
         if ( ! is_null($groups) ) {
