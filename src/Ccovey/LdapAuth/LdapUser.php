@@ -26,7 +26,7 @@ class LdapUser implements Auth\UserInterface
 		$username = (Config::has('auth.username_field')) ? Config::get('auth.username_field') : 'username';
 		return $this->attributes[$username];
 	}
-    
+
     /**
 	 * Get the password for the user.
 	 *
@@ -36,6 +36,28 @@ class LdapUser implements Auth\UserInterface
 	{
 		return $this->attributes['password'];
 	}
+
+        /**
+	 * Get the token value for the "remember me" session.
+	 *
+	 * @return string
+	 */
+	public function getRememberToken(){}
+
+	/**
+	 * Set the token value for the "remember me" session.
+	 *
+	 * @param  string  $value
+	 * @return void
+	 */
+	public function setRememberToken($value){}
+
+	/**
+	 * Get the column name for the "remember me" token.
+	 *
+	 * @return string
+	 */
+	public function getRememberTokenName(){}
 
 	/**
 	 * Dynamically access the user's attributes.
